@@ -2,7 +2,11 @@ package com.academy.banking;
 
 import com.academy.banking.service.BankService;
 import com.academy.banking.transaction.TransactionType;
+import com.academy.banking.transaction.Transaction;
 import java.math.BigDecimal;
+import com.academy.banking.model.BankAccount;
+import com.academy.banking.transaction.Transaction;
+
 public class Main {
 
     public static void main(String[] args) {
@@ -54,5 +58,20 @@ public class Main {
                 "Ayşe: " +
                         bankService.findAccount("TR002").getBalance()
         );
+
+
+        BankAccount ali = bankService.findAccount("TR001");
+
+        System.out.println("Ali'nin hesap hareketleri:");
+
+        for (Transaction transaction : ali.getTransactions()) {
+
+            System.out.println(
+                    "Tür: " + transaction.getType()
+                            + " | Tutar: " + transaction.getAmount()
+                            + " | Tarih: " + transaction.getCreatedAt()
+            );
+        }
+
     }
 }

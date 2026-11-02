@@ -1,6 +1,9 @@
 
 package com.academy.banking.model;
-
+import com.academy.banking.transaction.Transaction;
+import com.academy.banking.transaction.TransactionType;
+import java.util.ArrayList;
+import java.util.List;
 import java.math.BigDecimal;
 
 public class BankAccount {
@@ -8,6 +11,7 @@ public class BankAccount {
     private final String accountNumber;
     private final String ownerName;
     private BigDecimal balance;
+    private final List<Transaction> transactions = new ArrayList<>();
 
     public BankAccount(
             String accountNumber,
@@ -51,6 +55,14 @@ public class BankAccount {
         validateAmount(amount);
 
         balance = balance.add(amount);
+
+
+        Transaction transaction = new Transaction(
+                TransactionType.DEPOSIT,
+                amount
+        );
+
+        transactions.add(transaction);
     }
 
     public void withdraw(BigDecimal amount) {
@@ -64,6 +76,13 @@ public class BankAccount {
         }
 
         balance = balance.subtract(amount);
+
+        Transaction transaction = new Transaction(
+                TransactionType.WITHDRAW,
+                amount
+        );
+
+        transactions.add(transaction);
     }
 
     private void validateAmount(BigDecimal amount) {
@@ -86,5 +105,9 @@ public class BankAccount {
 
     public BigDecimal getBalance() {
         return balance;
+    }
+
+    public List<Transaction> getTransactions() {
+        return List.copyOf(transactions);
     }
 }
