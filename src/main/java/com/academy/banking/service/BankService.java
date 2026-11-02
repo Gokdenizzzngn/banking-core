@@ -6,6 +6,7 @@ import com.academy.banking.model.BankAccount;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class BankService {
 
@@ -96,8 +97,10 @@ public class BankService {
         }
 
         // 5. Para transferini gerçekleştir
-        sender.withdraw(amount);
-        receiver.deposit(amount);
+        UUID transferId = UUID.randomUUID();
+
+        sender.sendTransfer(amount, transferId);
+        receiver.receiveTransfer(amount, transferId);
     }
 
 

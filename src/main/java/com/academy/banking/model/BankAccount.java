@@ -1,13 +1,18 @@
 
 package com.academy.banking.model;
-
+import com.academy.banking.transaction.Transaction;
+import com.academy.banking.transaction.TransactionType;
+import java.util.ArrayList;
+import java.util.List;
 import java.math.BigDecimal;
+import java.util.UUID;
 
 public class BankAccount {
 
     private final String accountNumber;
     private final String ownerName;
     private BigDecimal balance;
+    private final List<Transaction> transactions = new ArrayList<>();
 
     public BankAccount(
             String accountNumber,
@@ -46,15 +51,40 @@ public class BankAccount {
         this.balance = initialBalance;
     }
 
-    public void deposit(BigDecimal amount) {
-
-        validateAmount(amount);
-
-        balance = balance.add(amount);
+    private void increaseBalance(
+            BigDecimal amount,
+            TransactionType type
+    ) {
+        increaseBalance(amount, type, null);
     }
 
-    public void withdraw(BigDecimal amount) {
+    private void increaseBalance(
+            BigDecimal amount,
+            TransactionType type,
+            UUID transferId
+    ) {
+        validateAmount(amount);
 
+        Transaction transaction =
+                new Transaction(type, amount, transferId);
+
+        balance = balance.add(amount);
+        transactions.add(transaction);
+    }
+
+
+    private void decreaseBalance(
+            BigDecimal amount,
+            TransactionType type
+    ) {
+        decreaseBalance(amount, type, null);
+    }
+
+    private void decreaseBalance(
+            BigDecimal amount,
+            TransactionType type,
+            UUID transferId
+    ) {
         validateAmount(amount);
 
         if (balance.compareTo(amount) < 0) {
@@ -63,7 +93,27 @@ public class BankAccount {
             );
         }
 
+        Transaction transaction =
+                new Transaction(type, amount, transferId);
+
         balance = balance.subtract(amount);
+        transactions.add(transaction);
+    }
+
+    public void deposit(BigDecimal amount) {
+        increaseBalance(amount, TransactionType.DEPOSIT);
+    }
+
+    public void receiveTransfer(BigDecimal amount, UUID transferId) {
+        increaseBalance(amount, TransactionType.TRANSFER_IN, transferId);
+    }
+
+    public void withdraw(BigDecimal amount) {
+        decreaseBalance(amount, TransactionType.WITHDRAW);
+    }
+
+    public void sendTransfer(BigDecimal amount, UUID transferId) {
+        decreaseBalance(amount, TransactionType.TRANSFER_OUT, transferId);
     }
 
     private void validateAmount(BigDecimal amount) {
@@ -86,5 +136,9 @@ public class BankAccount {
 
     public BigDecimal getBalance() {
         return balance;
+    }
+
+    public List<Transaction> getTransactions() {
+        return List.copyOf(transactions);
     }
 }

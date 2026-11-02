@@ -3,12 +3,14 @@ package com.academy.banking.service;
 
 import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
-
+import com.academy.banking.transaction.Transaction;
+import com.academy.banking.transaction.TransactionType;
+import com.academy.banking.model.BankAccount;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+
 
 public class BankServiceTest {
 
@@ -136,5 +138,121 @@ public class BankServiceTest {
         );
 
     }
+
+
+    @Test
+    void shouldRecordTransferWithCorrectTransactionTypes() {
+
+        // Arrange
+        bankService.deposit(
+                "TR001",
+                new BigDecimal("1000.00")
+        );
+
+        // Act
+        bankService.transfer(
+                "TR001",
+                "TR002",
+                new BigDecimal("300.00")
+        );
+
+        // Assert
+        BankAccount sender =
+                bankService.findAccount("TR001");
+
+        BankAccount receiver =
+                bankService.findAccount("TR002");
+
+        Transaction senderTransaction =
+                sender.getTransactions().get(1);
+
+        Transaction receiverTransaction =
+                receiver.getTransactions().get(0);
+
+        assertEquals(
+                TransactionType.TRANSFER_OUT,
+                senderTransaction.getType()
+        );
+
+        assertEquals(
+                TransactionType.TRANSFER_IN,
+                receiverTransaction.getType()
+        );
+
+
+        assertEquals(
+                new BigDecimal("300.00"),
+                senderTransaction.getAmount()
+        );
+
+        assertEquals(
+                new BigDecimal("300.00"),
+                receiverTransaction.getAmount()
+        );
+
+        assertEquals(
+                0,
+                sender.getBalance().compareTo(
+                        new BigDecimal("700.00")
+                )
+        );
+
+        assertEquals(
+                0,
+                receiver.getBalance().compareTo(
+                        new BigDecimal("300.00")
+                )
+        );
+
+    }
+
+
+    @Test
+    void shouldUseSameTransferIdForBothAccounts() {
+
+        // Arrange
+        bankService.deposit(
+                "TR001",
+                new BigDecimal("1000.00")
+        );
+
+        // Act
+        bankService.transfer(
+                "TR001",
+                "TR002",
+                new BigDecimal("300.00")
+        );
+
+        // Assert
+        BankAccount sender =
+                bankService.findAccount("TR001");
+
+        BankAccount receiver =
+                bankService.findAccount("TR002");
+
+        Transaction outgoing =
+                sender.getTransactions().get(1);
+
+        Transaction incoming =
+                receiver.getTransactions().get(0);
+
+        assertNotNull(outgoing.getTransferId());
+
+        assertEquals(
+                outgoing.getTransferId(),
+                incoming.getTransferId()
+        );
+
+        assertEquals(
+                TransactionType.TRANSFER_OUT,
+                outgoing.getType()
+        );
+
+        assertEquals(
+                TransactionType.TRANSFER_IN,
+                incoming.getType()
+        );
+    }
+
 
 }
