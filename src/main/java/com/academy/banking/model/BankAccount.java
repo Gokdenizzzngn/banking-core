@@ -5,6 +5,7 @@ import com.academy.banking.transaction.TransactionType;
 import java.util.ArrayList;
 import java.util.List;
 import java.math.BigDecimal;
+import java.util.UUID;
 
 public class BankAccount {
 
@@ -54,17 +55,35 @@ public class BankAccount {
             BigDecimal amount,
             TransactionType type
     ) {
+        increaseBalance(amount, type, null);
+    }
+
+    private void increaseBalance(
+            BigDecimal amount,
+            TransactionType type,
+            UUID transferId
+    ) {
         validateAmount(amount);
 
-        Transaction transaction = new Transaction(type, amount);
+        Transaction transaction =
+                new Transaction(type, amount, transferId);
 
         balance = balance.add(amount);
         transactions.add(transaction);
     }
 
+
     private void decreaseBalance(
             BigDecimal amount,
             TransactionType type
+    ) {
+        decreaseBalance(amount, type, null);
+    }
+
+    private void decreaseBalance(
+            BigDecimal amount,
+            TransactionType type,
+            UUID transferId
     ) {
         validateAmount(amount);
 
@@ -74,7 +93,8 @@ public class BankAccount {
             );
         }
 
-        Transaction transaction = new Transaction(type, amount);
+        Transaction transaction =
+                new Transaction(type, amount, transferId);
 
         balance = balance.subtract(amount);
         transactions.add(transaction);
@@ -84,16 +104,16 @@ public class BankAccount {
         increaseBalance(amount, TransactionType.DEPOSIT);
     }
 
-    public void receiveTransfer(BigDecimal amount) {
-        increaseBalance(amount, TransactionType.TRANSFER_IN);
+    public void receiveTransfer(BigDecimal amount, UUID transferId) {
+        increaseBalance(amount, TransactionType.TRANSFER_IN, transferId);
     }
 
     public void withdraw(BigDecimal amount) {
         decreaseBalance(amount, TransactionType.WITHDRAW);
     }
 
-    public void sendTransfer(BigDecimal amount) {
-        decreaseBalance(amount, TransactionType.TRANSFER_OUT);
+    public void sendTransfer(BigDecimal amount, UUID transferId) {
+        decreaseBalance(amount, TransactionType.TRANSFER_OUT, transferId);
     }
 
     private void validateAmount(BigDecimal amount) {
