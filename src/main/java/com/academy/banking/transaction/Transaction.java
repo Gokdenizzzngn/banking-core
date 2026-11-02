@@ -47,6 +47,12 @@ public class Transaction {
             );
         }
 
+        if (!isTransfer && transferId != null) {
+            throw new IllegalArgumentException(
+                    "Normal işlem transfer kimliği taşıyamaz."
+            );
+        }
+
         this.type = type;
         this.amount = amount;
         this.createdAt = LocalDateTime.now();

@@ -5,7 +5,6 @@ import com.academy.banking.transaction.TransactionType;
 import com.academy.banking.transaction.Transaction;
 import java.math.BigDecimal;
 import com.academy.banking.model.BankAccount;
-import com.academy.banking.transaction.Transaction;
 
 public class Main {
 
