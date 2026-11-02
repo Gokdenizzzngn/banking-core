@@ -50,23 +50,22 @@ public class BankAccount {
         this.balance = initialBalance;
     }
 
-    public void deposit(BigDecimal amount) {
-
+    private void increaseBalance(
+            BigDecimal amount,
+            TransactionType type
+    ) {
         validateAmount(amount);
 
+        Transaction transaction = new Transaction(type, amount);
+
         balance = balance.add(amount);
-
-
-        Transaction transaction = new Transaction(
-                TransactionType.DEPOSIT,
-                amount
-        );
-
         transactions.add(transaction);
     }
 
-    public void withdraw(BigDecimal amount) {
-
+    private void decreaseBalance(
+            BigDecimal amount,
+            TransactionType type
+    ) {
         validateAmount(amount);
 
         if (balance.compareTo(amount) < 0) {
@@ -75,14 +74,26 @@ public class BankAccount {
             );
         }
 
+        Transaction transaction = new Transaction(type, amount);
+
         balance = balance.subtract(amount);
-
-        Transaction transaction = new Transaction(
-                TransactionType.WITHDRAW,
-                amount
-        );
-
         transactions.add(transaction);
+    }
+
+    public void deposit(BigDecimal amount) {
+        increaseBalance(amount, TransactionType.DEPOSIT);
+    }
+
+    public void receiveTransfer(BigDecimal amount) {
+        increaseBalance(amount, TransactionType.TRANSFER_IN);
+    }
+
+    public void withdraw(BigDecimal amount) {
+        decreaseBalance(amount, TransactionType.WITHDRAW);
+    }
+
+    public void sendTransfer(BigDecimal amount) {
+        decreaseBalance(amount, TransactionType.TRANSFER_OUT);
     }
 
     private void validateAmount(BigDecimal amount) {

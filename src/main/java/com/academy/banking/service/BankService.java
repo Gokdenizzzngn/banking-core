@@ -96,8 +96,8 @@ public class BankService {
         }
 
         // 5. Para transferini gerçekleştir
-        sender.withdraw(amount);
-        receiver.deposit(amount);
+        sender.sendTransfer(amount);
+        receiver.receiveTransfer(amount);
     }
 
 
